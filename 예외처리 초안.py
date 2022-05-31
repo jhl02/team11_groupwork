@@ -14,3 +14,5 @@ def main():
             break
         except ValueError:
             continue
+
+main()
