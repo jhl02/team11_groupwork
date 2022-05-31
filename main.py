@@ -1,7 +1,6 @@
 # 11조 할당 문제 팀 과제
 # random 모듈 임포트
 import random
-
 def main():
     # 예외처리 초안
     while True:
