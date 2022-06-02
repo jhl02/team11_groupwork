@@ -1,6 +1,26 @@
 # 11조 할당 문제 팀 과제
+import logging
+import logging.handlers
+
+#logger 인스턴스 생성. '로그관리'파일에 로깅함
+logger = logging.getLogger('로그관리')
+#로그 레벨을 "DEBUG"으로 설정
+logger.setLevel(logging.DEBUG)
+#formatter 생성
+formatter = logging.Formatter('[%(levelname)s| %(filename)s: %(lineno)s] %(asctime)s > %(message)s')
+#fileHandler와 StreamHandler를 생성 (콘솔에 출력하기 위함)
+fileHandler = logging.FileHandler('로그관리')
+streamHandler = logging.StreamHandler()
+#handler에 formatter 세팅
+fileHandler.setFormatter(formatter)
+streamHandler.setFormatter(formatter)
+#Handler를 logging에 추가
+logger.addHandler(fileHandler)
+logger.addHandler(streamHandler)
+
 # random 모듈 임포트
 import random
+
 def main():
     # 역할 1:
     # 사용자로부터 n값 입력받음
@@ -9,31 +29,38 @@ def main():
     while True:
         try:
             #end를 탈출문으로 사용하기 위해서 우선 인풋값을 문자열로 받아옴
-            s = input("n 값을 입력하세요(end 입력하면 코드 완료): ")
+            n = input("n 값을 입력하세요(end 입력하면 코드 완료): ")
+            logger.debug("n 값을 입력 받음")
             #만약 input이 탈출문이면 코드 실행 종료
-            if s == "end":
+            if n == "end":
                 print("코드를 완료합니다")
+                logger.debug("탈출 구문을 입력 받아서 코드 종료됨")
                 return
             #n을 int로 받아옴
-            n = int(s)
+            n = int(n)
+            logger.debug("변수 n를 int로 변경함")
         except:
             #만약 n이 int가 아니면 오류 발생 후 다시 while문 실행
             print("정수를 입력해주세요")
+            logger.warning("n에 정수형 입력을 기대했으나 다른 자료형이 입력됨")
             continue
         # 만약 n값이 10보다 크거나 0보다 같거나 작으면 오류 발생. 예외처리를 try-except문으로 구현
         try:
-            if n>10 or n<=0:
+            if n > 9 or n<=0:
                 raise ValueError
         except:
             print("1 부터 9까지의 정수를 입력해주세요")
+            logger.warning("0 < n < 10 를 기대했으나 n > 9 또는 n < 1이 입력됨.")
             continue
 
         # n*n 이중 리스트 생성
         data = [[rand_num() for i in range(n)] for j in range(n)]
+        logger.debug("n*n 이중 리스트를 생성하여 변수 data에 할당됨")
 
         # 역할 2:
         # 0부터 n-1까지를 담은 리스트 생성
         index_list = [i for i in range(n)]
+        logger.debug("0 부터 n-1까지를 담은 리스트 생성 하여 변수 index_list에 할당됨")
 
         # 0부터 n-1까지의 인덱스들의 모든 순열을 2D 리스트로 반환받아 for문에 사용
         # 다음과 같은 로직으로 최솟값을 계산:
@@ -57,13 +84,35 @@ def main():
             if cost < min_cost or min_cost < 0:
                 min_cost = cost
                 min_case = i
+        logger.debug("permutation 함수를 활용하여 모든 순열을 탐색하여 최소비용이 나오는 케이스를 구함")
 
         # 아직 역할 4 구현 전이라 역할 2의 기능 점검을 위해 임시적으로 프린트문 생성, 이후 역할 4로 대체할 것
         print("최소 비용은 " + str(min_cost) + " 입니다.")
         print("이 때, 로봇들은 다음과 같이 작업을 수행합니다: ")
         for i in range(len(min_case)):
             print("로봇 " + str(i + 1) + "이(가) 작업 " + str(min_case[i]) + "을(를) 수행합니다.")
-
+        #역할 4:
+        import pandas as pd
+        #dataframe의 index가 될 로봇리스트 작성
+        robot_list = [("로봇" + str(i+1)) for i in range(n)]
+        #dataframe의 column값이 될 작업리스트 작성
+        work_list = [("작업" + (str(i))) for i in range(n)]
+        #n*n이중리스트 data를 element로, culumns를 work_list로, index를 robot_list로 가지는 matrix 작성
+        data_matrix = pd.DataFrame(data,
+                                columns=work_list,
+                                index=robot_list)
+        #최적해에 따라 robot_list의 순서를 바꿈
+        #얘를 들어 로봇1이 작업 1, 로봇2가 작업 0을 한다면 [로봇1,로봇2]를 [로봇2,로봇1]로 순서를 바꿈
+        robot_list = [robot_list[i] for i in min_case]
+        #data_matrix에 최적해일 때의 로봇을 새로운 행으로 append
+        data_matrix.loc["최적해"] = robot_list
+        val = (pd.Series([min_cost], index=["최적해"]))
+        data_matrix['solution'] = val
+        print(data_matrix)
+        #위 data_matrix, 즉 solution을 csv파일로 저장
+        import csv
+        data_matrix.to_csv(r'~/PycharmProjects/team11_groupwork/output/result.csv')
+    
 
 # 역할 1:
 # 1부터 10까지의 랜덤 자연수 생성 함수
@@ -98,6 +147,7 @@ def permutation(list1, r):
                 return_list.append([list1[i]] + p)
     # 반환 리스트를 반환한다.
     return return_list
+
 
 
 # 메인 함수의 실행
