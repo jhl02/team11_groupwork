@@ -1,17 +1,20 @@
 # 11조 할당 문제 팀 과제
 import logging
 import logging.handlers
+
+#logger 인스턴스 생성. '로그관리'파일에 로깅함
 logger = logging.getLogger('로그관리')
+#로그 레벨을 "DEBUG"으로 설정
 logger.setLevel(logging.DEBUG)
-
+#formatter 생성
 formatter = logging.Formatter('[%(levelname)s| %(filename)s: %(lineno)s] %(asctime)s > %(message)s')
-
+#fileHandler와 StreamHandler를 생성 (콘솔에 출력하기 위함)
 fileHandler = logging.FileHandler('로그관리')
 streamHandler = logging.StreamHandler()
-
+#handler에 formatter 세팅
 fileHandler.setFormatter(formatter)
 streamHandler.setFormatter(formatter)
-
+#Handler를 logging에 추가
 logger.addHandler(fileHandler)
 logger.addHandler(streamHandler)
 
@@ -31,7 +34,7 @@ def main():
             #만약 input이 탈출문이면 코드 실행 종료
             if n == "end":
                 print("코드를 완료합니다")
-                logger.debug("탈출 구문을 입력 받아서 코드 종료")
+                logger.debug("탈출 구문을 입력 받아서 코드 종료됨")
                 return
             #n을 int로 받아옴
             n = int(n)
@@ -39,7 +42,7 @@ def main():
         except:
             #만약 n이 int가 아니면 오류 발생 후 다시 while문 실행
             print("정수를 입력해주세요")
-            logger.warning("n에 정수형 입력을 기대했으나 다른 자료형이 입력")
+            logger.warning("n에 정수형 입력을 기대했으나 다른 자료형이 입력됨")
             continue
         # 만약 n값이 10보다 크거나 0보다 같거나 작으면 오류 발생. 예외처리를 try-except문으로 구현
         try:
@@ -47,17 +50,17 @@ def main():
                 raise ValueError
         except:
             print("1 부터 9까지의 정수를 입력해주세요")
-            logger.warning("0 < n < 10 를 기대했으나 n > 9 또는 n < 1이 입력됨. ")
+            logger.warning("0 < n < 10 를 기대했으나 n > 9 또는 n < 1이 입력됨.")
             continue
 
         # n*n 이중 리스트 생성
         data = [[rand_num() for i in range(n)] for j in range(n)]
-        logger.debug("n*n 이중 리스트를 생성하여 변수 data에 할당")
+        logger.debug("n*n 이중 리스트를 생성하여 변수 data에 할당됨")
 
         # 역할 2:
         # 0부터 n-1까지를 담은 리스트 생성
         index_list = [i for i in range(n)]
-        logger.debug("0 부터 n-1까지를 담은 리스트 생성 하여 변수 index_list에 할당")
+        logger.debug("0 부터 n-1까지를 담은 리스트 생성 하여 변수 index_list에 할당됨")
 
         # 0부터 n-1까지의 인덱스들의 모든 순열을 2D 리스트로 반환받아 for문에 사용
         # 다음과 같은 로직으로 최솟값을 계산:
