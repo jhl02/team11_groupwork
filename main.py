@@ -1,33 +1,50 @@
 # 11조 할당 문제 팀 과제
+# Branch 이름 및 구성원 역할 배분:
+# A (이재현) - 역할 2 (솔루션) 담당
+# B (이세영) - 역할 3 (예외 처리 및 로그 관리) 담당
+# C (최영두) - 역할 1 (사용자 입력 및 자료 생성) 담당
+# D (김호연) - 역할 4 (출력 파일) 담당
+
+# 본 코드:
 # 모듈 임포트
 import random
 import logging.handlers
 
-# logger 인스턴스 생성. '로그관리'파일에 로깅함
+# logger 인스턴스 생성, '로그관리' 파일에 로깅함
 logger = logging.getLogger('로그관리')
+
 # 로그 레벨을 "DEBUG"으로 설정
 logger.setLevel(logging.DEBUG)
+
 # formatter 생성
 formatter = logging.Formatter('[%(levelname)s| %(filename)s: %(lineno)s] %(asctime)s > %(message)s')
+
 # fileHandler와 StreamHandler를 생성 (콘솔에 출력하기 위함)
 fileHandler = logging.FileHandler('로그관리')
 streamHandler = logging.StreamHandler()
+
 # handler에 formatter 세팅
 fileHandler.setFormatter(formatter)
 streamHandler.setFormatter(formatter)
+
 # Handler를 logging에 추가
 logger.addHandler(fileHandler)
 logger.addHandler(streamHandler)
 
+# 메인 함수
 def main():
-    # 역할 1, 3:
+    # 역할 1:
     # 사용자로부터 n값 입력받음
-    # 사용자가 n의 값으로 정수를 입력하지 않았거나, 음수를 입력했을시의 예외 처리를 위해 raise문을 활용했다
-    # whileTrue 반복문이 계속 돌아가면서 사용자에게 입력을 받는다.
+    # 역할 3:
+    # 사용자가 n의 값으로 1부터 9 사이의 정수를 입력하지 않았을 경우의 예외 처리
+    # 반복문이 계속 돌아가면서 사용자에게 입력을 받는다.
+    # 사용자가 end를 입력하기 전까지 계속 n을 받아와 지속적으로 결과를 출력하고,
+    # end를 입력할 시 마지막에 입력된 케이스의 결과가 출력 파일에 저장된다.
     while True:
         try:
-            # end를 탈출문으로 사용하기 위해서 우선 인풋값을 문자열로 받아옴
+            # 역할 1:
             n = input("n 값을 입력하세요(end 입력하면 코드 완료): ")
+            # 역할 3:
             logger.debug("n 값을 입력 받음")
             # 만약 input이 탈출문이면 코드 실행 종료
             if n == "end":
@@ -50,6 +67,7 @@ def main():
             logger.warning("0 < n < 10 를 기대했으나 n > 9 또는 n < 1이 입력됨.")
             continue
 
+        # 역할 1:
         # n*n 이중 리스트 생성
         data = [[random.randrange(1, 11) for i in range(n)] for j in range(n)]
         logger.debug("n*n 이중 리스트를 생성하여 변수 data에 할당됨")
@@ -83,12 +101,14 @@ def main():
                 min_case = i
         logger.debug("permutation 함수를 활용하여 모든 순열을 탐색하여 최소비용이 나오는 케이스를 구함")
 
-        # 아직 역할 4 구현 전이라 역할 2의 기능 점검을 위해 임시적으로 프린트문 생성, 이후 역할 4로 대체할 것
+        # 프린트로 결과 출력
         print("최소 비용은 " + str(min_cost) + " 입니다.")
         print("이 때, 로봇들은 다음과 같이 작업을 수행합니다: ")
         for i in range(len(min_case)):
             print("로봇 " + str(i + 1) + "이(가) 작업 " + str(min_case[i] + 1) + "을(를) 수행합니다.")
+
         # 역할 4:
+        # 출력 파일에 결과 출력
         import pandas as pd
         # dataframe의 index가 될 로봇리스트 작성
         robot_list = [("로봇" + str(i + 1)) for i in range(n)]
@@ -137,7 +157,6 @@ def permutation(list1, r):
                 return_list.append([list1[i]] + p)
     # 반환 리스트를 반환한다.
     return return_list
-
 
 # 메인 함수의 실행
 if __name__ == "__main__":
